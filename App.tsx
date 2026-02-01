@@ -67,8 +67,7 @@ const App: React.FC = () => {
       subscribeToCollection('orders', (data) => setOrders(data as Order[])),
       subscribeToCollection('feedbacks', (data) => { 
         if (data.length > 0) setFeedbacks(data as Feedback[]);
-        // Removing the else block here ensures that if the admin deletes all feedbacks,
-        // the app doesn't automatically reload the mock data.
+        else setFeedbacks(MOCK_FEEDBACKS);
       })
     ];
 

@@ -50,12 +50,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
   };
 
   const deleteItem = async (id: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    if (!window.confirm("Permanently delete this item? This cannot be undone.")) return;
+    if (e) e.stopPropagation();
+    if (!window.confirm("Permanently delete this item?")) return;
 
     // Optimistic Update - Remove from UI immediately
     if (activeTab === 'services') setters?.setServices(p => p.filter(i => i.id !== id));
@@ -248,7 +244,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => { setEditingId(item.id); setEditBuffer({ ...item }); }} className="p-3 bg-white/5 rounded-2xl text-[#F7E7CE]/60 hover:bg-[#F7E7CE]/10 transition-colors"><Edit2 size={18} /></button>
-                    <button onClick={(e) => deleteItem(item.id, e)} className="p-3 bg-red-400/10 rounded-2xl text-red-400/60 hover:bg-red-400/20 transition-colors cursor-pointer"><Trash2 size={18} className="pointer-events-none" /></button>
+                    <button onClick={(e) => deleteItem(item.id, e)} className="p-3 bg-red-400/10 rounded-2xl text-red-400/60 hover:bg-red-400/20 transition-colors"><Trash2 size={18} /></button>
                   </div>
                 </div>
               )}
@@ -323,9 +319,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
               <div key={b.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold relative group">
                 <button 
                   onClick={(e) => deleteItem(b.id, e)}
-                  className="absolute top-6 right-6 p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all z-[50] active:scale-90 cursor-pointer"
+                  className="absolute top-6 right-6 p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all z-30 active:scale-90"
                 >
-                  <Trash2 size={16} className="pointer-events-none" />
+                  <Trash2 size={16} />
                 </button>
                 <div className="flex justify-between items-start mb-5 pr-12">
                   <div>
@@ -367,9 +363,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
                <div key={o.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold relative group">
                   <button 
                     onClick={(e) => deleteItem(o.id, e)}
-                    className="absolute top-6 right-6 p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all z-[50] active:scale-90 cursor-pointer"
+                    className="absolute top-6 right-6 p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all z-30 active:scale-90"
                   >
-                    <Trash2 size={16} className="pointer-events-none" />
+                    <Trash2 size={16} />
                   </button>
                   <div className="flex justify-between items-center mb-6 pr-12">
                     <p className="text-[10px] font-black text-[#F7E7CE] uppercase tracking-[0.3em]">Order #{o.id.slice(-6)}</p>
@@ -420,19 +416,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
              <h3 className="text-sm font-bold text-[#F7E7CE] uppercase tracking-[0.4em] serif mb-8">Customer Reviews</h3>
              {data?.feedbacks.map((f) => (
                <div key={f.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold relative group">
-                  <div className="absolute top-6 right-6 flex items-center gap-2 z-[40]">
+                  <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
                      <button 
                        onClick={() => toggleFeedbackVisibility(f.id, f.approved)}
-                       className={`p-3 rounded-xl transition-all ${f.approved ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'} hover:bg-white/10 cursor-pointer active:scale-90`}
+                       className={`p-3 rounded-xl transition-all ${f.approved ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'} hover:bg-white/10`}
                        title={f.approved ? "Hide Review" : "Show Review"}
                      >
-                       {f.approved !== false ? <Eye size={16} className="pointer-events-none" /> : <EyeOff size={16} className="pointer-events-none" />}
+                       {f.approved !== false ? <Eye size={16} /> : <EyeOff size={16} />}
                      </button>
                      <button 
                        onClick={(e) => deleteItem(f.id, e)}
-                       className="p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all active:scale-90 cursor-pointer"
+                       className="p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all active:scale-90"
                      >
-                       <Trash2 size={16} className="pointer-events-none" />
+                       <Trash2 size={16} />
                      </button>
                   </div>
 
@@ -452,7 +448,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
                     ))}
                   </div>
 
-                  <p className="text-xs text-white/80 leading-relaxed italic pr-24 relative z-10">
+                  <p className="text-xs text-white/80 leading-relaxed italic pr-12">
                     "{f.message}"
                   </p>
                   
