@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ChevronLeft, ShoppingBag, ShieldCheck, Sparkles, Droplets } from 'lucide-react';
 import { Product } from '../types';
@@ -12,7 +13,7 @@ const ProductDetailScreen: React.FC<ProductDetailScreenProps> = ({ product, onBa
   return (
     <div className="animate-in slide-in-from-right-10 duration-500 pb-10">
       <button onClick={onBack} className="flex items-center gap-2 text-[#F7E7CE]/60 mb-6 hover:text-[#F7E7CE] transition-colors">
-        <ChevronLeft size={20} /> <span className="text-[10px] uppercase tracking-widest font-bold">Back to Boutique</span>
+        <ChevronLeft size={20} /> <span className="text-[10px] uppercase tracking-widest font-bold">Back to Luxury Items</span>
       </button>
 
       <div className="rounded-[3rem] overflow-hidden mb-8 shadow-2xl relative aspect-square border border-white/5 glow-gold">

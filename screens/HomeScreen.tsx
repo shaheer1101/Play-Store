@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Star, PlayCircle, Crown, MessageSquare, Bell } from 'lucide-react';
-import { Service } from '../types';
+import { ArrowRight, Star, PlayCircle, Crown, MessageSquare, Bell, Quote } from 'lucide-react';
+import { Service, Feedback } from '../types';
 import { requestNotificationPermission } from '../services/notificationService';
 
 interface HomeScreenProps {
@@ -9,9 +9,10 @@ interface HomeScreenProps {
   onBook: (service: Service) => void;
   featuredServices: Service[];
   onOpenFeedback?: () => void;
+  feedbacks?: Feedback[];
 }
 
-const HomeScreen: React.FC<HomeScreenProps> = ({ setActiveTab, onBook, featuredServices, onOpenFeedback }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ setActiveTab, onBook, featuredServices, onOpenFeedback, feedbacks = [] }) => {
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
@@ -28,6 +29,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setActiveTab, onBook, featuredS
       setShowPrompt(false);
     }
   };
+
+  const visibleFeedbacks = feedbacks.filter(f => f.approved !== false);
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -97,7 +100,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setActiveTab, onBook, featuredS
         </div>
       </section>
 
-      <div className="relative rounded-[2.5rem] p-10 overflow-hidden border border-[#F7E7CE]/20 bg-[#124C34]/30 glow-gold mb-8 group">
+      <div className="relative rounded-[2.5rem] p-10 overflow-hidden border border-[#F7E7CE]/20 bg-[#124C34]/30 glow-gold mb-10 group">
         <Crown className="absolute -top-10 -right-10 text-[#F7E7CE]/5 group-hover:scale-125 transition-transform duration-[2s]" size={200} fill="currentColor" />
         <div className="relative z-10">
           <span className="text-[10px] font-bold text-[#F7E7CE]/60 uppercase tracking-[0.4em] block mb-3">Academic Excellence</span>
@@ -106,6 +109,51 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setActiveTab, onBook, featuredS
           <button onClick={() => setActiveTab('store')} className="bg-transparent border border-[#F7E7CE] text-[#F7E7CE] px-10 py-3.5 rounded-2xl text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-[#F7E7CE] hover:text-[#0A2419] transition-all">Apply for Mastery</button>
         </div>
       </div>
+
+      {/* Customer Feedback Section */}
+      {visibleFeedbacks && visibleFeedbacks.length > 0 && (
+        <section className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="flex items-center justify-center gap-3 mb-8">
+             <div className="h-px w-8 bg-gradient-to-r from-transparent to-[#F7E7CE]/40"></div>
+             <h3 className="text-sm font-black text-[#F7E7CE] uppercase tracking-[0.3em] serif">Whispers of Perfection</h3>
+             <div className="h-px w-8 bg-gradient-to-l from-transparent to-[#F7E7CE]/40"></div>
+          </div>
+          
+          <div className="flex gap-4 overflow-x-auto no-scrollbar px-2 pb-4 -mx-2 snap-x snap-mandatory">
+            {visibleFeedbacks.map((fb, idx) => (
+               <div 
+                 key={fb.id} 
+                 className="min-w-[280px] glass-card p-6 rounded-[2rem] border-white/5 glow-gold snap-center flex flex-col relative group"
+                 style={{ animationDelay: `${idx * 100}ms` }}
+               >
+                  <div className="absolute top-6 right-6 opacity-20 group-hover:opacity-40 transition-opacity">
+                    <Quote size={40} className="text-[#F7E7CE]" />
+                  </div>
+                  
+                  <div className="flex gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={10} fill={i < fb.rating ? "#F7E7CE" : "transparent"} className={i < fb.rating ? "text-[#F7E7CE]" : "text-white/10"} />
+                    ))}
+                  </div>
+                  
+                  <p className="text-[11px] text-white/80 leading-relaxed italic mb-6 line-clamp-4 relative z-10">
+                    "{fb.message}"
+                  </p>
+                  
+                  <div className="mt-auto flex items-center gap-3 pt-4 border-t border-white/5">
+                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#F7E7CE] to-[#C9A23A] flex items-center justify-center text-[#0A2419] font-black text-[10px] shadow-lg">
+                        {fb.userName.charAt(0)}
+                     </div>
+                     <div>
+                        <p className="text-[10px] font-bold text-[#F7E7CE] uppercase tracking-wider">{fb.userName}</p>
+                        <p className="text-[8px] text-white/30 uppercase tracking-widest">{fb.date.split(',')[0]}</p>
+                     </div>
+                  </div>
+               </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <div className="glass-card p-8 rounded-[2.5rem] border-[#F7E7CE]/10 flex items-center justify-between mb-10 glow-gold">
         <div>

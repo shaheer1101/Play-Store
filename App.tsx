@@ -19,11 +19,11 @@ import FeedbackScreen from './screens/FeedbackScreen';
 import AdminPanel from './screens/AdminPanel';
 import CartScreen from './screens/CartScreen';
 import LoginScreen from './screens/LoginScreen';
-import { MOCK_SERVICES, MOCK_PRODUCTS, MOCK_COURSES, MOCK_VIDEOS, MOCK_GALLERY } from './constants';
+import { MOCK_SERVICES, MOCK_PRODUCTS, MOCK_COURSES, MOCK_VIDEOS, MOCK_GALLERY, MOCK_FEEDBACKS } from './constants';
 import { CartItem, Service, Product, Course, VideoItem, GalleryItem, Appointment, Order, Feedback } from './types';
 import { MessageCircle, CloudSync } from 'lucide-react';
 import { sendNotification } from './services/notificationService';
-import { fetchData, saveData } from './services/firebaseService';
+import { subscribeToCollection, saveData } from './services/firebaseService';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -52,41 +52,35 @@ const App: React.FC = () => {
   const [gallery, setGallery] = useState<GalleryItem[]>(MOCK_GALLERY);
   const [bookings, setBookings] = useState<Appointment[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [feedbacks, setFeedbacks] = useState<Feedback[]>([]);
+  const [feedbacks, setFeedbacks] = useState<Feedback[]>(MOCK_FEEDBACKS);
 
-  // Initial Data Sync from Firebase
+  // Real-time Data Sync from Firebase
   useEffect(() => {
-    const syncAllData = async () => {
-      setSyncing(true);
-      try {
-        const cloudServices = await fetchData('services');
-        if (cloudServices && cloudServices.length > 0) setServices(cloudServices as any);
+    const unsubs = [
+      subscribeToCollection('services', (data) => { if(data.length > 0) setServices(data as Service[]); }),
+      subscribeToCollection('products', (data) => { if(data.length > 0) setProducts(data as Product[]); }),
+      subscribeToCollection('courses', (data) => { if(data.length > 0) setCourses(data as Course[]); }),
+      subscribeToCollection('videos', (data) => { if(data.length > 0) setVideos(data as VideoItem[]); }),
+      subscribeToCollection('gallery', (data) => { if(data.length > 0) setGallery(data as GalleryItem[]); }),
+      
+      subscribeToCollection('bookings', (data) => setBookings(data as Appointment[])),
+      subscribeToCollection('orders', (data) => setOrders(data as Order[])),
+      subscribeToCollection('feedbacks', (data) => { 
+        if (data.length > 0) setFeedbacks(data as Feedback[]);
+        // Removing the else block here ensures that if the admin deletes all feedbacks,
+        // the app doesn't automatically reload the mock data.
+      })
+    ];
 
-        const cloudProducts = await fetchData('products');
-        if (cloudProducts && cloudProducts.length > 0) setProducts(cloudProducts as any);
+    setLoading(false);
 
-        const cloudBookings = await fetchData('bookings');
-        if (cloudBookings) setBookings(cloudBookings as any);
-
-        const cloudOrders = await fetchData('orders');
-        if (cloudOrders) setOrders(cloudOrders as any);
-        
-        const cloudFeedbacks = await fetchData('feedbacks');
-        if (cloudFeedbacks) setFeedbacks(cloudFeedbacks as any);
-      } catch (e) {
-        console.warn("Database sync limited. Using local defaults.");
-      }
-      setLoading(false);
-      setSyncing(false);
+    return () => {
+      unsubs.forEach(unsub => unsub());
     };
-
-    syncAllData();
   }, []);
 
   const handleSplashFinish = () => {
     setIsSplashing(false);
-    // Mandatory login removed as per request.
-    // Users can still login via the profile button in the header if they want.
   };
 
   const handleAdminTrigger = () => setShowAdminLogin(true);
@@ -115,6 +109,7 @@ const App: React.FC = () => {
   };
 
   const handleBookingConfirm = async (appointment: Appointment) => {
+    // Optimistic update
     setBookings(prev => [appointment, ...prev]);
     await saveData('bookings', appointment.id, appointment);
     sendNotification(
@@ -124,6 +119,7 @@ const App: React.FC = () => {
   };
 
   const handleOrderConfirm = async (order: Order) => {
+    // Optimistic update
     setOrders(prev => [order, ...prev]);
     setCartItems([]);
     await saveData('orders', order.id, order);
@@ -134,6 +130,7 @@ const App: React.FC = () => {
   };
 
   const handleFeedbackSubmit = async (fb: Feedback) => {
+    // Optimistic update
     setFeedbacks(prev => [fb, ...prev]);
     await saveData('feedbacks', fb.id, fb);
   };
@@ -172,7 +169,7 @@ const App: React.FC = () => {
     if (selectedCourseDetail) return <CourseDetailScreen course={selectedCourseDetail} onBack={() => setSelectedCourseDetail(null)} onEnroll={addToCart} />;
 
     switch (activeTab) {
-      case 'home': return <HomeScreen setActiveTab={setActiveTab} onBook={(s) => setBookingService(s)} featuredServices={services} onOpenFeedback={() => setShowFeedback(true)} />;
+      case 'home': return <HomeScreen setActiveTab={setActiveTab} onBook={(s) => setBookingService(s)} featuredServices={services} onOpenFeedback={() => setShowFeedback(true)} feedbacks={feedbacks} />;
       case 'services': return <ServicesScreen services={services} onBook={(s) => setBookingService(s)} onViewDetails={(s) => setSelectedServiceDetail(s)} />;
       case 'store': return <StoreScreen products={products} courses={courses} onAddToCart={addToCart} onViewProduct={setSelectedProductDetail} onViewCourse={setSelectedCourseDetail} />;
       case 'viral': return <ViralScreen videos={videos} onBook={(sId) => {
@@ -181,7 +178,7 @@ const App: React.FC = () => {
       }} />;
       case 'ai': return <AIScreen />;
       case 'gallery': return <GalleryScreen gallery={gallery} />;
-      default: return <HomeScreen setActiveTab={setActiveTab} onBook={(s) => setBookingService(s)} featuredServices={services} onOpenFeedback={() => setShowFeedback(true)} />;
+      default: return <HomeScreen setActiveTab={setActiveTab} onBook={(s) => setBookingService(s)} featuredServices={services} onOpenFeedback={() => setShowFeedback(true)} feedbacks={feedbacks} />;
     }
   };
 

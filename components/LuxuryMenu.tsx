@@ -29,7 +29,7 @@ const LuxuryMenu: React.FC<LuxuryMenuProps> = ({
   const menuItems = useMemo(() => [
     { id: 'home', icon: <Home size={22} />, label: 'Home Studio' },
     { id: 'services', icon: <Scissors size={22} />, label: 'Master Salon' },
-    { id: 'store', icon: <ShoppingBag size={22} />, label: 'Luxury Boutique' },
+    { id: 'store', icon: <ShoppingBag size={22} />, label: 'Luxury Items' },
     { id: 'viral', icon: <Zap size={22} />, label: 'Viral Studio' },
     { id: 'ai', icon: <Sparkles size={22} />, label: 'AI Concierge' },
     { id: 'gallery', icon: <Image size={22} />, label: 'The Gallery' },
@@ -157,7 +157,7 @@ const LuxuryMenu: React.FC<LuxuryMenuProps> = ({
                    </div>
                    <div className="flex-1 min-w-0">
                      <p className="text-[11px] font-bold text-white truncate uppercase tracking-tight">{p.name}</p>
-                     <p className="text-[8px] text-[#F7E7CE]/60 font-medium uppercase tracking-widest mt-0.5">Boutique</p>
+                     <p className="text-[8px] text-[#F7E7CE]/60 font-medium uppercase tracking-widest mt-0.5">Luxury Items</p>
                    </div>
                    <ArrowRight size={14} className="text-[#F7E7CE]/30 group-hover/item:translate-x-1 transition-all" />
                  </button>

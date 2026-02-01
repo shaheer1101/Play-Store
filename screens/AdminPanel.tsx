@@ -1,6 +1,6 @@
 
 import React, { useState, useRef } from 'react';
-import { ShoppingBag, Calendar, Edit2, Trash2, Plus, X, Camera, Image as ImageIcon, Save, Film, Phone, MapPin, Info, Clock, ChevronLeft, CloudSync } from 'lucide-react';
+import { ShoppingBag, Calendar, Edit2, Trash2, Plus, X, Camera, Image as ImageIcon, Save, Film, Phone, MapPin, Info, Clock, ChevronLeft, CloudSync, Wallet, CreditCard, MessageSquare, Eye, EyeOff, Star } from 'lucide-react';
 import { Service, Product, Course, VideoItem, GalleryItem, Appointment, Order, Feedback } from '../types';
 import Logo from '../components/Logo';
 import { sendNotification } from '../services/notificationService';
@@ -50,20 +50,25 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
   };
 
   const deleteItem = async (id: string, e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
-    if (!window.confirm("Permanently delete this item from the Cloud?")) return;
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    if (!window.confirm("Permanently delete this item? This cannot be undone.")) return;
+
+    // Optimistic Update - Remove from UI immediately
+    if (activeTab === 'services') setters?.setServices(p => p.filter(i => i.id !== id));
+    if (activeTab === 'products') setters?.setProducts(p => p.filter(i => i.id !== id));
+    if (activeTab === 'courses') setters?.setCourses(p => p.filter(i => i.id !== id));
+    if (activeTab === 'videos') setters?.setVideos(p => p.filter(i => i.id !== id));
+    if (activeTab === 'gallery') setters?.setGallery(p => p.filter(i => i.id !== id));
+    if (activeTab === 'bookings') setters?.setBookings(p => p.filter(i => i.id !== id));
+    if (activeTab === 'orders') setters?.setOrders(p => p.filter(i => i.id !== id));
+    if (activeTab === 'feedbacks') setters?.setFeedbacks(p => p.filter(i => i.id !== id));
 
     setIsSyncing(true);
-    const colName = activeTab;
-    const success = await deleteData(colName, id);
-
-    if (success) {
-      if (activeTab === 'services') setters?.setServices(p => p.filter(i => i.id !== id));
-      if (activeTab === 'products') setters?.setProducts(p => p.filter(i => i.id !== id));
-      if (activeTab === 'courses') setters?.setCourses(p => p.filter(i => i.id !== id));
-      if (activeTab === 'videos') setters?.setVideos(p => p.filter(i => i.id !== id));
-      if (activeTab === 'gallery') setters?.setGallery(p => p.filter(i => i.id !== id));
-    }
+    await deleteData(activeTab, id);
     setIsSyncing(false);
   };
 
@@ -77,40 +82,20 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
 
     setIsSyncing(true);
     const finalItem = { ...editBuffer };
-    const success = await saveData(activeTab, editingId, finalItem);
-
-    if (success) {
-      if (activeTab === 'services') {
-        setters?.setServices(p => {
-          const exists = p.find(i => i.id === editingId);
-          return exists ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p];
-        });
-      }
-      if (activeTab === 'products') {
-        setters?.setProducts(p => {
-          const exists = p.find(i => i.id === editingId);
-          return exists ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p];
-        });
-      }
-      if (activeTab === 'courses') {
-        setters?.setCourses(p => {
-          const exists = p.find(i => i.id === editingId);
-          return exists ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p];
-        });
-      }
-      if (activeTab === 'videos') {
-        setters?.setVideos(p => {
-          const exists = p.find(i => i.id === editingId);
-          return exists ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p];
-        });
-      }
-      if (activeTab === 'gallery') {
-        setters?.setGallery(p => {
-          const exists = p.find(i => i.id === editingId);
-          return exists ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p];
-        });
-      }
+    // Optimistic Update
+    if (activeTab === 'services') {
+      setters?.setServices(p => {
+        const exists = p.find(i => i.id === editingId);
+        return exists ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p];
+      });
     }
+    // Simple optimistic updates for other lists
+    if (activeTab === 'products') setters?.setProducts(p => { const e = p.find(i => i.id === editingId); return e ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p]; });
+    if (activeTab === 'courses') setters?.setCourses(p => { const e = p.find(i => i.id === editingId); return e ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p]; });
+    if (activeTab === 'videos') setters?.setVideos(p => { const e = p.find(i => i.id === editingId); return e ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p]; });
+    if (activeTab === 'gallery') setters?.setGallery(p => { const e = p.find(i => i.id === editingId); return e ? p.map(i => i.id === editingId ? finalItem : i) : [finalItem, ...p]; });
+
+    await saveData(activeTab, editingId, finalItem);
     
     setEditingId(null);
     setEditBuffer(null);
@@ -118,24 +103,35 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
   };
 
   const updateBookingStatus = async (id: string, status: Appointment['status']) => {
-    setIsSyncing(true);
-    const success = await updateFields('bookings', id, { status });
-    if (success) {
-      setters?.setBookings(p => p.map(b => b.id === id ? { ...b, status } : b));
-      const item = data?.bookings.find(b => b.id === id);
-      if (item && status === 'Accepted') {
-        sendNotification("Booking Update", `Session for ${item.clientName} is now ${status}.`);
-      }
+    // Optimistic Update
+    setters?.setBookings(p => p.map(b => b.id === id ? { ...b, status } : b));
+    
+    const item = data?.bookings.find(b => b.id === id);
+    if (item && (status === 'Accepted' || status === 'Rejected')) {
+      sendNotification("Booking Update", `Session for ${item.clientName} is now ${status}.`);
     }
+
+    setIsSyncing(true);
+    await updateFields('bookings', id, { status });
     setIsSyncing(false);
   };
 
   const updateOrderStatus = async (id: string, status: Order['status']) => {
+    // Optimistic Update
+    setters?.setOrders(p => p.map(o => o.id === id ? { ...o, status } : o));
+
     setIsSyncing(true);
-    const success = await updateFields('orders', id, { status });
-    if (success) {
-      setters?.setOrders(p => p.map(o => o.id === id ? { ...o, status } : o));
-    }
+    await updateFields('orders', id, { status });
+    setIsSyncing(false);
+  };
+
+  const toggleFeedbackVisibility = async (id: string, currentStatus?: boolean) => {
+    const newStatus = !currentStatus;
+    // Optimistic Update
+    setters?.setFeedbacks(p => p.map(f => f.id === id ? { ...f, approved: newStatus } : f));
+
+    setIsSyncing(true);
+    await updateFields('feedbacks', id, { approved: newStatus });
     setIsSyncing(false);
   };
 
@@ -241,7 +237,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
               {editingId === item.id ? (
                 renderEditForm()
               ) : (
-                <div className="glass-card p-5 rounded-[2.5rem] border-white/5 glow-gold overflow-hidden flex items-center gap-5">
+                <div className="glass-card p-5 rounded-[2.5rem] border-white/5 glow-gold overflow-hidden flex items-center gap-5 relative group">
                   <div className="w-16 h-16 rounded-2xl overflow-hidden border border-white/10 shrink-0 bg-black/40">
                     <img src={item.image || item.after || item.thumbnail} className="w-full h-full object-cover" />
                   </div>
@@ -252,7 +248,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => { setEditingId(item.id); setEditBuffer({ ...item }); }} className="p-3 bg-white/5 rounded-2xl text-[#F7E7CE]/60 hover:bg-[#F7E7CE]/10 transition-colors"><Edit2 size={18} /></button>
-                    <button onClick={(e) => deleteItem(item.id, e)} className="p-3 bg-red-400/10 rounded-2xl text-red-400/60 hover:bg-red-400/20 transition-colors"><Trash2 size={18} /></button>
+                    <button onClick={(e) => deleteItem(item.id, e)} className="p-3 bg-red-400/10 rounded-2xl text-red-400/60 hover:bg-red-400/20 transition-colors cursor-pointer"><Trash2 size={18} className="pointer-events-none" /></button>
                   </div>
                 </div>
               )}
@@ -304,6 +300,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
           {[
             { id: 'bookings', icon: <Calendar size={14} />, label: 'Bookings' },
             { id: 'orders', icon: <ShoppingBag size={14} />, label: 'Orders' },
+            { id: 'feedbacks', icon: <MessageSquare size={14} />, label: 'Feedbacks' },
             { id: 'services', icon: <Edit2 size={14} />, label: 'Services' },
             { id: 'products', icon: <ImageIcon size={14} />, label: 'Products' },
             { id: 'videos', icon: <Film size={14} />, label: 'Reels' },
@@ -323,8 +320,14 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
           <div className="space-y-4">
             <h3 className="text-sm font-bold text-[#F7E7CE] uppercase tracking-[0.4em] serif mb-8">Client Sessions</h3>
             {data?.bookings.map((b) => (
-              <div key={b.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold">
-                <div className="flex justify-between items-start mb-5">
+              <div key={b.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold relative group">
+                <button 
+                  onClick={(e) => deleteItem(b.id, e)}
+                  className="absolute top-6 right-6 p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all z-[50] active:scale-90 cursor-pointer"
+                >
+                  <Trash2 size={16} className="pointer-events-none" />
+                </button>
+                <div className="flex justify-between items-start mb-5 pr-12">
                   <div>
                     <h4 className="text-sm font-bold text-white serif">{b.serviceName}</h4>
                     <p className="text-[10px] text-[#F7E7CE] font-black mt-1 uppercase tracking-[0.2em]">{b.clientName}</p>
@@ -333,16 +336,23 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
                     {b.status}
                   </span>
                 </div>
-                <div className="grid grid-cols-2 gap-4 text-[10px] text-white/40 font-bold uppercase tracking-widest mb-8 bg-black/20 p-4 rounded-3xl">
+                <div className="grid grid-cols-2 gap-4 text-[10px] text-white/40 font-bold uppercase tracking-widest mb-6 bg-black/20 p-4 rounded-3xl">
                   <div className="flex items-center gap-2 text-white/60"><Calendar size={12} className="text-[#F7E7CE]"/> {b.date}</div>
                   <div className="flex items-center gap-2 text-white/60"><Clock size={12} className="text-[#F7E7CE]"/> {b.time}</div>
                   <div className="flex items-center gap-2 text-white/60"><Phone size={12} className="text-[#F7E7CE]"/> {b.phone}</div>
                   <div className="flex items-center gap-2 text-white/60"><Info size={12} className="text-[#F7E7CE]"/> Rs. {b.price.toLocaleString()}</div>
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={() => updateBookingStatus(b.id, 'Accepted')} className="flex-1 bg-green-600 text-white py-4 rounded-2xl text-[8px] font-black uppercase shadow-lg active:scale-95 transition-transform">Accept</button>
-                  <button onClick={() => updateBookingStatus(b.id, 'Rejected')} className="flex-1 bg-red-600 text-white py-4 rounded-2xl text-[8px] font-black uppercase shadow-lg active:scale-95 transition-transform">Reject</button>
-                  <button onClick={() => updateBookingStatus(b.id, 'Completed')} className="flex-1 bg-white/10 text-white py-4 rounded-2xl text-[8px] font-black uppercase border border-white/5 active:scale-95 transition-transform">Done</button>
+                  {b.status === 'Pending' ? (
+                    <>
+                      <button onClick={() => updateBookingStatus(b.id, 'Accepted')} className="flex-1 bg-green-600/20 text-green-400 hover:bg-green-600 hover:text-white py-3 rounded-xl text-[9px] font-black uppercase border border-green-600/30 transition-all shadow-lg active:scale-95">Accept</button>
+                      <button onClick={() => updateBookingStatus(b.id, 'Rejected')} className="flex-1 bg-red-600/20 text-red-400 hover:bg-red-600 hover:text-white py-3 rounded-xl text-[9px] font-black uppercase border border-red-600/30 transition-all shadow-lg active:scale-95">Reject</button>
+                    </>
+                  ) : b.status === 'Accepted' ? (
+                     <button onClick={() => updateBookingStatus(b.id, 'Completed')} className="flex-1 bg-white/5 text-[#F7E7CE] hover:bg-white/10 py-3 rounded-xl text-[9px] font-black uppercase border border-white/10 transition-all shadow-lg active:scale-95">Mark Completed</button>
+                  ) : (
+                     <div className="w-full text-center py-3 text-[9px] font-bold text-white/30 uppercase tracking-widest bg-black/20 rounded-xl">Session {b.status}</div>
+                  )}
                 </div>
               </div>
             ))}
@@ -354,12 +364,18 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
           <div className="space-y-4">
              <h3 className="text-sm font-bold text-[#F7E7CE] uppercase tracking-[0.4em] serif mb-8">Boutique Orders</h3>
              {data?.orders.map((o) => (
-               <div key={o.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold">
-                  <div className="flex justify-between items-center mb-6">
+               <div key={o.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold relative group">
+                  <button 
+                    onClick={(e) => deleteItem(o.id, e)}
+                    className="absolute top-6 right-6 p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all z-[50] active:scale-90 cursor-pointer"
+                  >
+                    <Trash2 size={16} className="pointer-events-none" />
+                  </button>
+                  <div className="flex justify-between items-center mb-6 pr-12">
                     <p className="text-[10px] font-black text-[#F7E7CE] uppercase tracking-[0.3em]">Order #{o.id.slice(-6)}</p>
                     <span className="text-[8px] font-black bg-white/5 px-4 py-1.5 rounded-full text-white/40 border border-white/5 uppercase tracking-widest">{o.status}</span>
                   </div>
-                  <div className="space-y-3 mb-8 bg-black/20 p-4 rounded-3xl">
+                  <div className="space-y-3 mb-6 bg-black/20 p-4 rounded-3xl">
                     {o.items.map((it, idx) => (
                       <div key={idx} className="flex justify-between items-center">
                          <p className="text-xs text-white/80"><span className="text-[#F7E7CE] font-bold">{it.quantity}x</span> {it.name}</p>
@@ -367,17 +383,85 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
                       </div>
                     ))}
                   </div>
-                  <div className="p-5 bg-white/5 rounded-3xl mb-8 border border-white/5">
-                    <p className="text-[9px] text-[#F7E7CE] uppercase font-black mb-2 tracking-widest">Shipping Destination</p>
-                    <p className="text-xs text-white font-bold">{o.clientName}</p>
-                    <p className="text-[10px] text-white/40 mt-3 italic leading-relaxed"><MapPin size={10} className="inline mr-1" /> {o.address}</p>
+
+                  <div className="grid grid-cols-2 gap-4 mb-6 bg-white/5 p-4 rounded-3xl border border-white/5">
+                    <div>
+                        <p className="text-[8px] text-[#F7E7CE]/60 uppercase font-black mb-1">Contact</p>
+                        <p className="text-[10px] text-white font-bold">{o.clientName}</p>
+                        <p className="text-[9px] text-white/60 mt-0.5">{o.phone}</p>
+                    </div>
+                    <div>
+                        <p className="text-[8px] text-[#F7E7CE]/60 uppercase font-black mb-1">Payment</p>
+                        <p className="text-[10px] text-white font-bold">{o.paymentMethod}</p>
+                    </div>
+                    <div className="col-span-2 pt-2 border-t border-white/5">
+                        <p className="text-[8px] text-[#F7E7CE]/60 uppercase font-black mb-1">Shipping Address</p>
+                        <p className="text-[10px] text-white/80 leading-relaxed italic"><MapPin size={10} className="inline mr-1 text-[#F7E7CE]" /> {o.address}</p>
+                    </div>
                   </div>
+
                   <div className="flex gap-3">
-                    <button onClick={() => updateOrderStatus(o.id, 'Shipped')} className="flex-1 bg-[#F7E7CE] text-[#0A2419] py-4 rounded-2xl text-[8px] font-black uppercase shadow-xl active:scale-95 transition-transform">Mark Shipped</button>
-                    <button onClick={() => updateOrderStatus(o.id, 'Delivered')} className="flex-1 bg-green-600 text-white py-4 rounded-2xl text-[8px] font-black uppercase shadow-xl active:scale-95 transition-transform">Delivered</button>
+                    {o.status === 'Pending' ? (
+                       <button onClick={() => updateOrderStatus(o.id, 'Shipped')} className="flex-1 bg-[#F7E7CE] text-[#0A2419] py-3 rounded-xl text-[9px] font-black uppercase shadow-xl active:scale-95 transition-transform hover:bg-[#E1B84F]">Ship Order</button>
+                    ) : o.status === 'Shipped' ? (
+                       <button onClick={() => updateOrderStatus(o.id, 'Delivered')} className="flex-1 bg-green-600 text-white py-3 rounded-xl text-[9px] font-black uppercase shadow-xl active:scale-95 transition-transform hover:bg-green-500">Mark Delivered</button>
+                    ) : (
+                       <div className="w-full text-center py-3 text-[9px] font-bold text-white/30 uppercase tracking-widest bg-black/20 rounded-xl">Order {o.status}</div>
+                    )}
                   </div>
                </div>
              ))}
+             {data?.orders.length === 0 && <p className="text-center text-white/20 italic py-10">No orders placed yet.</p>}
+          </div>
+        )}
+
+        {activeTab === 'feedbacks' && (
+          <div className="space-y-4">
+             <h3 className="text-sm font-bold text-[#F7E7CE] uppercase tracking-[0.4em] serif mb-8">Customer Reviews</h3>
+             {data?.feedbacks.map((f) => (
+               <div key={f.id} className="glass-card p-6 rounded-[2.5rem] border-white/5 glow-gold relative group">
+                  <div className="absolute top-6 right-6 flex items-center gap-2 z-[40]">
+                     <button 
+                       onClick={() => toggleFeedbackVisibility(f.id, f.approved)}
+                       className={`p-3 rounded-xl transition-all ${f.approved ? 'bg-green-500/10 text-green-400' : 'bg-yellow-500/10 text-yellow-400'} hover:bg-white/10 cursor-pointer active:scale-90`}
+                       title={f.approved ? "Hide Review" : "Show Review"}
+                     >
+                       {f.approved !== false ? <Eye size={16} className="pointer-events-none" /> : <EyeOff size={16} className="pointer-events-none" />}
+                     </button>
+                     <button 
+                       onClick={(e) => deleteItem(f.id, e)}
+                       className="p-3 bg-red-500/10 text-red-400 rounded-xl hover:bg-red-500/20 transition-all active:scale-90 cursor-pointer"
+                     >
+                       <Trash2 size={16} className="pointer-events-none" />
+                     </button>
+                  </div>
+
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#F7E7CE] to-[#C9A23A] flex items-center justify-center text-[#0A2419] font-black text-[10px] shadow-lg">
+                      {f.userName.charAt(0)}
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold text-[#F7E7CE] uppercase tracking-wider">{f.userName}</p>
+                      <p className="text-[8px] text-white/30 uppercase tracking-widest">{f.date.split(',')[0]}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1 mb-3">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} size={10} fill={i < f.rating ? "#F7E7CE" : "transparent"} className={i < f.rating ? "text-[#F7E7CE]" : "text-white/10"} />
+                    ))}
+                  </div>
+
+                  <p className="text-xs text-white/80 leading-relaxed italic pr-24 relative z-10">
+                    "{f.message}"
+                  </p>
+                  
+                  <div className="mt-4 inline-flex px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[8px] font-bold uppercase tracking-widest text-white/40">
+                    Status: {f.approved !== false ? 'Visible' : 'Hidden'}
+                  </div>
+               </div>
+             ))}
+             {data?.feedbacks.length === 0 && <p className="text-center text-white/20 italic py-10">No feedbacks received yet.</p>}
           </div>
         )}
 

@@ -90,4 +90,5 @@ export interface Feedback {
   message: string;
   date: string;
   rating: number;
+  approved?: boolean;
 }

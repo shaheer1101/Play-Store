@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Package, GraduationCap, Plus, Eye } from 'lucide-react';
 import { Product, Course } from '../types';
@@ -16,7 +17,7 @@ const StoreScreen: React.FC<StoreScreenProps> = ({ products, courses, onAddToCar
   return (
     <div className="animate-in fade-in duration-700 pb-10">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-[#F7E7CE] serif uppercase tracking-widest">The Grand Boutique</h2>
+        <h2 className="text-2xl font-bold text-[#F7E7CE] serif uppercase tracking-widest">Luxury Items</h2>
         <p className="text-xs text-[#F7E7CE]/60 uppercase tracking-widest mt-1">Exquisite Selection of Artifacts</p>
       </div>
 

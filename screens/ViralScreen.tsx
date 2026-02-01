@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Heart, MessageCircle, Share2, Link as LinkIcon, Disc, Play, Pause, Volume2, VolumeX, ShoppingBag } from 'lucide-react';
+import { Heart, Disc, Volume2, VolumeX, ShoppingBag } from 'lucide-react';
 import { VideoItem } from '../types';
 
 interface ViralScreenProps {
@@ -33,16 +33,6 @@ const ViralScreen: React.FC<ViralScreenProps> = ({ videos, onBook }) => {
     } else {
       setShowHeartBurst(id);
       setTimeout(() => setShowHeartBurst(null), 800);
-    }
-  };
-
-  const handleShare = (video: VideoItem) => {
-    if (navigator.share) {
-      navigator.share({
-        title: video.title,
-        text: video.description || 'Check out this bridal transformation!',
-        url: window.location.href
-      }).catch(console.error);
     }
   };
 
@@ -100,46 +90,6 @@ const ViralScreen: React.FC<ViralScreenProps> = ({ videos, onBook }) => {
             </div>
           )}
 
-          {/* Action Sidebar */}
-          <div className="absolute right-4 bottom-32 flex flex-col items-center gap-6 z-20">
-             <div className="flex flex-col items-center gap-1 group">
-               <button 
-                 onClick={() => handleToggleLike(vid.id)}
-                 className={`w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/20 transition-all ${likedVideos.has(vid.id) ? 'scale-110 text-[#F7E7CE]' : 'text-white'}`}
-               >
-                 <Heart size={24} fill={likedVideos.has(vid.id) ? "currentColor" : "transparent"} />
-               </button>
-               <span className="text-[10px] font-bold text-white font-montserrat tracking-tight">{vid.likes + (likedVideos.has(vid.id) ? 1 : 0)}</span>
-             </div>
-
-             <div className="flex flex-col items-center gap-1">
-               <button className="w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/20 text-white">
-                 <MessageCircle size={24} />
-               </button>
-               <span className="text-[10px] font-bold text-white font-montserrat tracking-tight">{vid.comments || 0}</span>
-             </div>
-
-             <div className="flex flex-col items-center gap-1">
-               <button 
-                 onClick={() => handleShare(vid)}
-                 className="w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/20 text-white"
-               >
-                 <Share2 size={24} />
-               </button>
-               <span className="text-[10px] font-bold text-white font-montserrat tracking-tight">{vid.shares || 0}</span>
-             </div>
-
-             <button className="w-12 h-12 rounded-full glass-card flex items-center justify-center border border-white/20 text-white">
-               <LinkIcon size={24} />
-             </button>
-
-             <div className="mt-4 relative">
-               <div className="w-10 h-10 rounded-full bg-black/40 border-2 border-[#E1B84F] p-1 animate-[spin_4s_linear_infinite]">
-                 <Disc className="text-[#F7E7CE] w-full h-full" />
-               </div>
-             </div>
-          </div>
-
           {/* Video Information Overlay */}
           <div className="relative p-6 z-10 w-full">
             <div className="flex flex-col mb-4">
@@ -166,7 +116,6 @@ const ViralScreen: React.FC<ViralScreenProps> = ({ videos, onBook }) => {
                   Book This Look <ShoppingBag size={14} />
                 </button>
               )}
-              <div className="w-2 h-2 rounded-full bg-[#E1B84F] animate-pulse"></div>
             </div>
           </div>
 

@@ -1,4 +1,5 @@
-import { Service, Course, GalleryItem, Product, VideoItem } from './types';
+
+import { Service, Course, GalleryItem, Product, VideoItem, Feedback } from './types';
 
 export const THEME = {
   primaryGreen: '#0A2419',
@@ -82,4 +83,11 @@ export const MOCK_VIDEOS: VideoItem[] = [
 export const MOCK_GALLERY: GalleryItem[] = [
   { id: 'g1', before: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=400&h=600&auto=format&fit=crop', after: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=400&h=600&auto=format&fit=crop', title: 'Nikkah Glow' },
   { id: 'g2', before: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?q=80&w=400&h=600&auto=format&fit=crop', after: 'https://images.unsplash.com/photo-1488421774737-2680193b3f46?q=80&w=400&h=600&auto=format&fit=crop', title: 'Mehndi Look' },
+];
+
+export const MOCK_FEEDBACKS: Feedback[] = [
+  { id: 'f1', userName: 'Sarah Khan', userPhone: '', message: 'The bridal service was absolutely magical. Aneela truly has a gift!', date: '12/10/2023', rating: 5, approved: true },
+  { id: 'f2', userName: 'Zara Ahmed', userPhone: '', message: 'Loved the products! The velvet glow palette is my new daily essential.', date: '15/11/2023', rating: 5, approved: true },
+  { id: 'f3', userName: 'Mariam B.', userPhone: '', message: 'Professional, hygienic, and purely luxurious. Worth every rupee.', date: '02/01/2024', rating: 4, approved: true },
+  { id: 'f4', userName: 'Ayesha Raza', userPhone: '', message: 'Took the self-grooming course and it changed my life. Highly recommend the academy!', date: '10/02/2024', rating: 5, approved: true },
 ];
