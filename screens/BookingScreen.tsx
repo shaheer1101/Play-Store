@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, ChevronLeft, CheckCircle, X } from 'lucide-react';
 import { Service, Appointment } from '../types';
+import confetti from 'canvas-confetti';
 
 interface BookingScreenProps {
   service: Service;
@@ -18,8 +19,8 @@ const BookingScreen: React.FC<BookingScreenProps> = ({ service, onBack, onConfir
   const slots = ['10:00 AM', '11:30 AM', '01:00 PM', '03:00 PM', '05:00 PM', '07:30 PM'];
 
   useEffect(() => {
-    if (isSuccess && (window as any).confetti) {
-      (window as any).confetti({
+    if (isSuccess) {
+      confetti({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },

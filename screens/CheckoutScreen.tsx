@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, CheckCircle, CreditCard, Wallet, Truck, X } from 'lucide-react';
 import { CartItem, Order } from '../types';
+import confetti from 'canvas-confetti';
 
 interface CheckoutScreenProps {
   item: CartItem[];
@@ -18,8 +19,8 @@ const CheckoutScreen: React.FC<CheckoutScreenProps> = ({ item, onBack, onComplet
   const total = item.reduce((acc, i) => acc + (i.price * i.quantity), 0) + 250;
 
   useEffect(() => {
-    if (isPlaced && (window as any).confetti) {
-      (window as any).confetti({
+    if (isPlaced) {
+      confetti({
         particleCount: 200,
         spread: 90,
         origin: { y: 0.7 },
