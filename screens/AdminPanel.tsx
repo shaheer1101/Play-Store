@@ -1,6 +1,5 @@
-
 import React, { useState, useRef } from 'react';
-import { ShoppingBag, Calendar, Edit2, Trash2, Plus, X, Camera, Image as ImageIcon, Save, Film, Phone, MapPin, Info, Clock, ChevronLeft, CloudSync, Wallet, CreditCard, MessageSquare, Eye, EyeOff, Star } from 'lucide-react';
+import { ShoppingBag, Calendar, Edit2, Trash2, Plus, X, Camera, Image as ImageIcon, Save, Film, Phone, MapPin, Info, Clock, ChevronLeft, RefreshCw, Wallet, CreditCard, MessageSquare, Eye, EyeOff, Star } from 'lucide-react';
 import { Service, Product, Course, VideoItem, GalleryItem, Appointment, Order, Feedback } from '../types';
 import Logo from '../components/Logo';
 import { sendNotification } from '../services/notificationService';
@@ -195,7 +194,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
 
         <div className="flex gap-4 pt-4">
           <button onClick={saveEdit} disabled={isSyncing} className="flex-1 btn-royal py-5 rounded-2xl text-[10px] font-black uppercase flex items-center justify-center gap-2 shadow-xl disabled:opacity-50">
-            {isSyncing ? <CloudSync className="animate-spin" size={16}/> : <Save size={16}/>} 
+            {isSyncing ? <RefreshCw className="animate-spin" size={16}/> : <Save size={16}/>} 
             {isSyncing ? 'Syncing...' : 'Save to Cloud'}
           </button>
           <button onClick={() => { setEditingId(null); setEditBuffer(null); }} className="flex-1 bg-white/5 text-white/40 py-5 rounded-2xl text-[10px] font-black uppercase flex items-center justify-center gap-2 border border-white/10"><X size={16}/> Discard</button>
@@ -286,7 +285,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
       <header className="h-24 border-b border-[#F7E7CE]/10 flex items-center justify-between px-8 bg-[#124C34]/30 backdrop-blur-3xl sticky top-0 z-[110]">
         <Logo size="sm" />
         <div className="flex items-center gap-6">
-          {isSyncing && <CloudSync className="text-[#F7E7CE] animate-spin" size={20} />}
+          {isSyncing && <RefreshCw className="text-[#F7E7CE] animate-spin" size={20} />}
           <button onClick={onLogout} className="text-red-400 text-[9px] font-black py-3 px-8 rounded-2xl border border-red-400/20 bg-red-400/5 uppercase tracking-[0.2em] active:scale-90 transition-transform">Logout</button>
         </div>
       </header>

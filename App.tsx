@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import LuxuryMenu from './components/LuxuryMenu';
@@ -21,7 +20,7 @@ import CartScreen from './screens/CartScreen';
 import LoginScreen from './screens/LoginScreen';
 import { MOCK_SERVICES, MOCK_PRODUCTS, MOCK_COURSES, MOCK_VIDEOS, MOCK_GALLERY, MOCK_FEEDBACKS } from './constants';
 import { CartItem, Service, Product, Course, VideoItem, GalleryItem, Appointment, Order, Feedback } from './types';
-import { MessageCircle, CloudSync } from 'lucide-react';
+import { MessageCircle, RefreshCw } from 'lucide-react';
 import { sendNotification } from './services/notificationService';
 import { subscribeToCollection, saveData } from './services/firebaseService';
 
@@ -199,7 +198,7 @@ const App: React.FC = () => {
       
       {syncing && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] bg-[#F7E7CE] text-[#0A2419] px-4 py-1.5 rounded-full text-[8px] font-black uppercase flex items-center gap-2 shadow-2xl animate-bounce">
-          <CloudSync size={12} className="animate-spin" /> Syncing Cloud Data
+          <RefreshCw size={12} className="animate-spin" /> Syncing Cloud Data
         </div>
       )}
 
