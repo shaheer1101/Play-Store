@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Star, PlayCircle, Crown, MessageSquare, Bell, Quote } from 'lucide-react';
 import { Service, Feedback } from '../types';
@@ -165,21 +166,6 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ setActiveTab, onBook, featuredS
         >
           <MessageSquare size={20} />
         </button>
-      </div>
-
-      {/* AdMob Banner Placeholder - Using Provided Unit ID */}
-      <div className="w-full flex flex-col items-center justify-center mb-6">
-        <p className="text-[8px] text-[#F7E7CE]/30 uppercase tracking-[0.3em] mb-2">Sponsored</p>
-        <div className="w-full max-w-[320px] h-[50px] bg-white/5 border border-white/10 flex items-center justify-center rounded-lg overflow-hidden relative">
-           {/* The Unit ID is placed in a data attribute for Native App wrappers to find and inject the real ad */}
-           <div 
-             id="admob-banner-container" 
-             data-ad-unit-id="ca-app-pub-6593594384696477/1154688898"
-             className="w-full h-full flex items-center justify-center"
-           >
-             <p className="text-[9px] text-white/20 font-bold uppercase tracking-widest">Advertisement</p>
-           </div>
-        </div>
       </div>
     </div>
   );

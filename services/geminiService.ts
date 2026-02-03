@@ -1,15 +1,11 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
-// Fixed: Added fallback to prevent crash if process.env is undefined in some environments
-const apiKey = process.env.API_KEY || "";
-const ai = new GoogleGenAI({ apiKey: apiKey });
+// Fixed: Corrected GoogleGenAI initialization to use named parameter and direct process.env.API_KEY
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export const getMakeupAdvice = async (userDescription: string, photoBase64?: string) => {
   try {
-    if (!apiKey) {
-      return "AI services are currently configuring. Please contact admin to enable AI features.";
-    }
-
     const model = 'gemini-3-flash-preview';
     const contents = photoBase64 
       ? {
@@ -37,8 +33,6 @@ export const getMakeupAdvice = async (userDescription: string, photoBase64?: str
 
 export const parseVoiceCommand = async (transcript: string) => {
   try {
-    if (!apiKey) return { intent: 'HELP' };
-
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: `The user said: "${transcript}". Identify if they want to book a service, see the academy, or view the gallery. Return a simple JSON with 'intent' and 'params'.`,
