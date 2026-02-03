@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Heart, Disc, Volume2, VolumeX, ShoppingBag } from 'lucide-react';
 import { VideoItem } from '../types';
@@ -39,8 +38,8 @@ const ViralScreen: React.FC<ViralScreenProps> = ({ videos, onBook }) => {
   return (
     <div 
       ref={containerRef}
-      className="fixed inset-0 top-0 bottom-[64px] bg-black snap-y snap-mandatory overflow-y-scroll no-scrollbar"
-      style={{ height: 'calc(100dvh - 64px)' }}
+      // Changed h-full to h-screen to force it to take full screen height regardless of parent padding
+      className="relative w-full h-screen snap-y snap-mandatory overflow-y-scroll no-scrollbar bg-black"
     >
       {videos.length === 0 && (
         <div className="h-full flex flex-col items-center justify-center text-[#F7E7CE]/40 italic uppercase tracking-widest text-[10px]">

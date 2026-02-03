@@ -185,7 +185,8 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen green-gradient flex flex-col font-sans">
-      {!isViralTab && !showLogin && (
+      {/* Show header on all main tabs including viral, only hide when logging in */}
+      {!showLogin && (
         <Header 
           cartCount={cartItems.reduce((acc, i) => acc + i.quantity, 0)} 
           onCartClick={() => setShowCart(true)} 
@@ -202,7 +203,12 @@ const App: React.FC = () => {
         </div>
       )}
 
-      <main className={`flex-1 ${isViralTab ? 'p-0 pt-0' : 'pt-20 px-4'} max-w-lg mx-auto w-full no-scrollbar overflow-y-auto animate-royal`}>
+      {/* 
+        Changes:
+        - If isViralTab: using 'p-0' so content starts at top (0px), behind the fixed header. 
+        - Removed 'pt-16' which was pushing video down.
+      */}
+      <main className={`flex-1 ${isViralTab ? 'p-0 bg-black' : 'pt-20 px-4'} max-w-lg mx-auto w-full no-scrollbar overflow-y-auto animate-royal`}>
         {renderScreen()}
         {!isViralTab && showGlobalUI && <div className="h-20" />}
       </main>

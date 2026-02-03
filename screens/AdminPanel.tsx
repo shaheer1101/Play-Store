@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { ShoppingBag, Calendar, Edit2, Trash2, Plus, X, Camera, Image as ImageIcon, Save, Film, Phone, MapPin, Info, Clock, ChevronLeft, RefreshCw, Wallet, CreditCard, MessageSquare, Eye, EyeOff, Star } from 'lucide-react';
+import { ShoppingBag, Calendar, Edit2, Trash2, Plus, X, Camera, Image as ImageIcon, Save, Film, Phone, MapPin, Info, Clock, ChevronLeft, RefreshCw, Wallet, CreditCard, MessageSquare, Eye, EyeOff, Star, Video } from 'lucide-react';
 import { Service, Product, Course, VideoItem, GalleryItem, Appointment, Order, Feedback } from '../types';
 import Logo from '../components/Logo';
 import { sendNotification } from '../services/notificationService';
@@ -42,6 +42,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
   const [editBuffer, setEditBuffer] = useState<any>(null);
 
   const mainFileRef = useRef<HTMLInputElement>(null);
+  const secondFileRef = useRef<HTMLInputElement>(null);
 
   const handleLogin = () => {
     if (password === 'A1234567890a') onLogin?.();
@@ -151,20 +152,94 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onLogin, onCancel, onLogout, is
       </div>
 
       <div className="space-y-5">
-        <div className="relative h-56 bg-black/40 rounded-3xl overflow-hidden border border-white/10 group">
-          {(editBuffer.image || editBuffer.after || editBuffer.thumbnail) ? (
-            <img src={editBuffer.image || editBuffer.after || editBuffer.thumbnail} className="w-full h-full object-cover" />
-          ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">
-               <ImageIcon size={48} strokeWidth={1} />
-               <p className="text-[8px] uppercase tracking-widest mt-2">No Media Uploaded</p>
+        {/* MEDIA UPLOAD SECTION */}
+        {activeTab === 'videos' ? (
+          // VIDEO SPECIFIC MEDIA UPLOAD
+          <div className="grid grid-cols-2 gap-4">
+            {/* Thumbnail Upload */}
+            <div className="relative h-40 bg-black/40 rounded-3xl overflow-hidden border border-white/10 group">
+              {editBuffer.thumbnail ? (
+                <img src={editBuffer.thumbnail} className="w-full h-full object-cover" />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">
+                   <ImageIcon size={32} strokeWidth={1} />
+                   <p className="text-[8px] uppercase tracking-widest mt-2">Thumbnail</p>
+                </div>
+              )}
+              <button onClick={() => mainFileRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[10px] text-white font-black uppercase tracking-widest bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera size={20}/> Upload Cover
+              </button>
+              <input type="file" ref={mainFileRef} hidden accept="image/*" onChange={(e) => handleFileUpload(e, 'thumbnail')} />
             </div>
-          )}
-          <button onClick={() => mainFileRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[10px] text-white font-black uppercase tracking-widest bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
-            <Camera size={24}/> Change Media
-          </button>
-          <input type="file" ref={mainFileRef} hidden accept="image/*" onChange={(e) => handleFileUpload(e, activeTab === 'gallery' ? 'after' : (activeTab === 'videos' ? 'thumbnail' : 'image'))} />
-        </div>
+
+            {/* Video File Upload */}
+            <div className="relative h-40 bg-black/40 rounded-3xl overflow-hidden border border-white/10 group">
+              {editBuffer.url && editBuffer.url.startsWith('data:') ? (
+                <video src={editBuffer.url} className="w-full h-full object-cover" muted loop autoPlay />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">
+                   <Video size={32} strokeWidth={1} />
+                   <p className="text-[8px] uppercase tracking-widest mt-2">Video File</p>
+                </div>
+              )}
+              <button onClick={() => secondFileRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[10px] text-white font-black uppercase tracking-widest bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Film size={20}/> Upload Video
+              </button>
+              <input type="file" ref={secondFileRef} hidden accept="video/*" onChange={(e) => handleFileUpload(e, 'url')} />
+            </div>
+          </div>
+        ) : activeTab === 'gallery' ? (
+          // GALLERY SPECIFIC MEDIA UPLOAD
+          <div className="grid grid-cols-2 gap-4">
+             {/* Before Image */}
+             <div className="relative h-40 bg-black/40 rounded-3xl overflow-hidden border border-white/10 group">
+              {editBuffer.before ? (
+                <img src={editBuffer.before} className="w-full h-full object-cover" />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">
+                   <ImageIcon size={32} strokeWidth={1} />
+                   <p className="text-[8px] uppercase tracking-widest mt-2">Before Look</p>
+                </div>
+              )}
+              <button onClick={() => secondFileRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[10px] text-white font-black uppercase tracking-widest bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera size={20}/> Upload Before
+              </button>
+              <input type="file" ref={secondFileRef} hidden accept="image/*" onChange={(e) => handleFileUpload(e, 'before')} />
+            </div>
+
+            {/* After Image */}
+            <div className="relative h-40 bg-black/40 rounded-3xl overflow-hidden border border-white/10 group">
+              {editBuffer.after ? (
+                <img src={editBuffer.after} className="w-full h-full object-cover" />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">
+                   <ImageIcon size={32} strokeWidth={1} />
+                   <p className="text-[8px] uppercase tracking-widest mt-2">After Look</p>
+                </div>
+              )}
+              <button onClick={() => mainFileRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[10px] text-white font-black uppercase tracking-widest bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                <Camera size={20}/> Upload After
+              </button>
+              <input type="file" ref={mainFileRef} hidden accept="image/*" onChange={(e) => handleFileUpload(e, 'after')} />
+            </div>
+          </div>
+        ) : (
+          // DEFAULT SINGLE IMAGE UPLOAD (Services, Products, Courses)
+          <div className="relative h-56 bg-black/40 rounded-3xl overflow-hidden border border-white/10 group">
+            {editBuffer.image ? (
+              <img src={editBuffer.image} className="w-full h-full object-cover" />
+            ) : (
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white/20">
+                 <ImageIcon size={48} strokeWidth={1} />
+                 <p className="text-[8px] uppercase tracking-widest mt-2">No Media Uploaded</p>
+              </div>
+            )}
+            <button onClick={() => mainFileRef.current?.click()} className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-[10px] text-white font-black uppercase tracking-widest bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+              <Camera size={24}/> Change Media
+            </button>
+            <input type="file" ref={mainFileRef} hidden accept="image/*" onChange={(e) => handleFileUpload(e, 'image')} />
+          </div>
+        )}
 
         <div className="space-y-4">
           <input 

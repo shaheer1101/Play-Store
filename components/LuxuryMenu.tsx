@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { X, Home, Scissors, ShoppingBag, Zap, Image, Sparkles, Crown, Search, ArrowRight } from 'lucide-react';
 import { Service, Product } from '../types';
@@ -73,7 +72,7 @@ const LuxuryMenu: React.FC<LuxuryMenuProps> = ({
   };
 
   return (
-    <div className={`fixed inset-0 z-[120] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+    <div className={`fixed inset-0 z-[120] transition-opacity duration-200 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
       {/* Blurred Backdrop - Click to Close */}
       <div 
         className="absolute inset-0 bg-[#0A2419]/98 backdrop-blur-3xl" 
@@ -98,7 +97,7 @@ const LuxuryMenu: React.FC<LuxuryMenuProps> = ({
 
       <div className="relative h-full flex flex-col items-center justify-start px-8 z-[125] pt-28">
         {/* Search Bar inside Menu */}
-        <div className={`w-full max-w-xs mb-8 transition-all duration-700 delay-100 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+        <div className={`w-full max-w-xs mb-8 transition-transform duration-200 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-5 opacity-0'}`}>
           <div className="relative group">
             <Search className={`absolute left-5 top-1/2 -translate-y-1/2 transition-colors ${searchQuery ? 'text-[#F7E7CE]' : 'text-[#F7E7CE]/40'}`} size={20} />
             <input 
@@ -124,7 +123,7 @@ const LuxuryMenu: React.FC<LuxuryMenuProps> = ({
           
           {/* Search Content Results */}
           {searchQuery.trim() && (searchResults.services.length > 0 || searchResults.products.length > 0) && (
-            <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+            <div className="flex flex-col gap-3 animate-in fade-in slide-in-from-top-4 duration-200">
                <h4 className="text-[10px] font-black text-[#F7E7CE]/60 uppercase tracking-[0.4em] pl-2 mb-1">Matches</h4>
                
                {/* Service Results */}
@@ -168,7 +167,7 @@ const LuxuryMenu: React.FC<LuxuryMenuProps> = ({
           {/* Navigation Links */}
           <div className="flex flex-col items-center gap-4 w-full">
             {searchQuery.trim() && searchResults.menu.length === 0 && searchResults.services.length === 0 && searchResults.products.length === 0 && (
-              <div className="py-10 text-center animate-in fade-in duration-500">
+              <div className="py-10 text-center animate-in fade-in duration-200">
                 <p className="text-[10px] text-white/30 tracking-[0.2em] uppercase">No results found</p>
                 <button onClick={() => setSearchQuery('')} className="mt-4 text-[9px] text-[#F7E7CE]/60 font-black uppercase underline tracking-[0.3em]">Clear Search</button>
               </div>
@@ -180,10 +179,10 @@ const LuxuryMenu: React.FC<LuxuryMenuProps> = ({
               <button
                 key={item.id}
                 onClick={() => handleSelect(item.id)}
-                className={`flex items-center gap-6 w-full group transition-all duration-500 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}
-                style={{ transitionDelay: `${(index + 2) * 50}ms` }}
+                className={`flex items-center gap-6 w-full group transition-all duration-200 ${isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}
+                style={{ transitionDelay: `${index * 50}ms` }}
               >
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300 ${activeTab === item.id ? 'gold-gradient text-[#0A2419] shadow-xl scale-110' : 'bg-white/5 text-[#F7E7CE]/40 group-hover:text-[#F7E7CE] group-hover:bg-white/10 shadow-md'}`}>
+                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-200 ${activeTab === item.id ? 'gold-gradient text-[#0A2419] shadow-xl scale-110' : 'bg-white/5 text-[#F7E7CE]/40 group-hover:text-[#F7E7CE] group-hover:bg-white/10 shadow-md'}`}>
                   {React.cloneElement(item.icon as React.ReactElement, { size: 24 })}
                 </div>
                 <div className="text-left">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bell, ShoppingBag, Menu as MenuIcon, User } from 'lucide-react';
+import { Bell, ShoppingBag, Menu as MenuIcon } from 'lucide-react';
 import Logo from './Logo';
 
 interface HeaderProps {
@@ -11,7 +11,7 @@ interface HeaderProps {
   user?: any;
 }
 
-const Header: React.FC<HeaderProps> = ({ onAdminTrigger, cartCount, onCartClick, onMenuOpen, onProfileClick, user }) => {
+const Header: React.FC<HeaderProps> = ({ onAdminTrigger, cartCount, onCartClick, onMenuOpen }) => {
   const [tapCount, setTapCount] = useState(0);
 
   const handleLogoTap = () => {
@@ -33,15 +33,6 @@ const Header: React.FC<HeaderProps> = ({ onAdminTrigger, cartCount, onCartClick,
       </div>
       
       <div className="flex items-center gap-4">
-        {onProfileClick && (
-          <button 
-            onClick={onProfileClick}
-            className="text-[#F3F3F3] hover:text-[#F7E7CE] transition-all active:scale-90"
-          >
-            <User size={22} strokeWidth={1.5} />
-          </button>
-        )}
-
         <button 
           onClick={onCartClick}
           className="text-[#F3F3F3] hover:text-[#F7E7CE] transition-all active:scale-90 relative p-2"
