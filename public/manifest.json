@@ -1,11 +1,22 @@
 {
   "name": "Aneela's Makeover",
   "short_name": "Aneela",
+  "lang": "en-US",
+  "dir": "ltr",
+  "iarc_rating_id": "",
   "categories": ["beauty", "hair", "cutting"],
+  "prefer_related_applications": false,
+  "related_applications": [],
   "id": "/?source=pwa",
   "description": "Premium beauty and professional makeover services for a royal experience.",
   "start_url": "/",
+  "scope": "/",
+  "scope_extensions": [
+    { "origin": "https://makeoversalon.netlify.app" }
+  ], 
   "display": "standalone",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait",
   "background_color": "#0A2419",
   "theme_color": "#0A2419",
