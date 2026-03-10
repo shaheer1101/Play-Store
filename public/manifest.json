@@ -1,6 +1,7 @@
 {
   "name": "Aneela's Makeover",
   "short_name": "Aneela Makeover",
+  "description": "Premium beauty and professional makeover services for a royal experience.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
