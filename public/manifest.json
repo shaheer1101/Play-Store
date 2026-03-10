@@ -49,19 +49,3 @@
     }
   ]
 }
-    "src": "screenshot-chat.jpg",
-    "sizes": "1080x2153",
-    "type": "image/jpeg",
-    "form_factor": "narrow",
-    "label": "AI Beauty Concierge"
-  },
-  {
-    "src": "screenshot-cart.jpg",
-    "sizes": "1080x2170",
-    "type": "image/jpeg",
-    "form_factor": "narrow",
-    "label": "Secure Luxury Checkout"
-  }
-  ]
-  
-}
