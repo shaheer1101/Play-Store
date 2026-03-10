@@ -1,39 +1,54 @@
 {
   "name": "Aneela's Makeover",
-  "short_name": "Aneela Makeover",
+  "short_name": "Aneela",
   "description": "Premium beauty and professional makeover services for a royal experience.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#004d40",
+  "background_color": "#0A2419",
+  "theme_color": "#0A2419",
   "icons": [
-  {
-    "src": "launchericon-192x192.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  },
-  {
-    "src": "launchericon-512x512.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
-]
+    {
+      "src": "launchericon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "launchericon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
   "screenshots": [
-  {
-    "src": "screenshot-home.jpg",
-    "sizes": "1080x1924",
-    "type": "image/jpeg",
-    "form_factor": "narrow",
-    "label": "Luxury Home Screen"
-  },
-  {
-    "src": "screenshot-gallery.jpg",
-    "sizes": "1080x2404",
-    "type": "image/jpeg",
-    "form_factor": "narrow",
-    "label": "Exquisite Portfolio"
-  },
-  {
+    {
+      "src": "screenshot-home.jpg",
+      "sizes": "1080x1924",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Luxury Home Screen"
+    },
+    {
+      "src": "screenshot-gallery.jpg",
+      "sizes": "1080x2404",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Exquisite Portfolio"
+    },
+    {
+      "src": "screenshot-chat.jpg",
+      "sizes": "1080x2153",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "AI Beauty Concierge"
+    },
+    {
+      "src": "screenshot-cart.jpg",
+      "sizes": "1080x2170",
+      "type": "image/jpeg",
+      "form_factor": "narrow",
+      "label": "Secure Luxury Checkout"
+    }
+  ]
+}
     "src": "screenshot-chat.jpg",
     "sizes": "1080x2153",
     "type": "image/jpeg",
