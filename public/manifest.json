@@ -1,6 +1,7 @@
 {
   "name": "Aneela's Makeover",
   "short_name": "Aneela",
+  "categories": ["beauty", "hair", "cutting"],
   "id": "/?source=pwa",
   "description": "Premium beauty and professional makeover services for a royal experience.",
   "start_url": "/",
