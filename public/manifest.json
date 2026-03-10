@@ -4,6 +4,7 @@
   "description": "Premium beauty and professional makeover services for a royal experience.",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0A2419",
   "theme_color": "#0A2419",
   "icons": [
